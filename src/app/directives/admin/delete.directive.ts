@@ -53,7 +53,7 @@ export class DeleteDirective {
           dismissOthers: true,
           messageType: MessageType.Error,
           position: Position.TopRight
-        });        
+        });         
       });     
     });   
   }
