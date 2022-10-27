@@ -1,6 +1,8 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { NgxFileDropEntry } from 'ngx-file-drop';
+import { FileUploadDialogState } from '../../../dialogs/file-upload-dialog/file-upload-dialog.component';
 import { AlertifyService, MessageType, Position } from '../../admin/alertify.service';
 import { CustomToastrService, ToastrMessageType, ToastrPosition } from '../../ui/custom-toastr.service';
 import { HttpClientService } from '../http-client.service';
@@ -12,7 +14,7 @@ import { HttpClientService } from '../http-client.service';
 })
 export class FileUploadComponent {
 
-  constructor(private httpClientService: HttpClientService,private alertifyService: AlertifyService,private customToastrService:CustomToastrService) { }
+  constructor(private httpClientService: HttpClientService,private alertifyService: AlertifyService,private customToastrService:CustomToastrService,private dialog:MatDialog) { }
 
   public files: NgxFileDropEntry[];
 
@@ -29,47 +31,66 @@ export class FileUploadComponent {
       });
     }
 
-    this.httpClientService.post({
-      controller: this.options.controller,
-      action: this.options.action,
-      queryString: this.options.queryString,
-      headers: new HttpHeaders({ "responseType": "blob" })
-    }, fileData).subscribe(data => {
+    this.openDialog(() => {
+      this.httpClientService.post({
+        controller: this.options.controller,
+        action: this.options.action,
+        queryString: this.options.queryString,
+        headers: new HttpHeaders({ "responseType": "blob" })
+      }, fileData).subscribe(data => {
 
-      const message: string = "Dosyalar başarılı şekilde yüklenmiştir."
+        const message: string = "Dosyalar başarılı şekilde yüklenmiştir."
 
-      if (this.options.isAdminPage) {
-        this.alertifyService.message(message, {
-          dismissOthers: true,
-          messageType: MessageType.Success,
-          position: Position.TopRight
-        })
-      }
-      else {
-        this.customToastrService.message(message, "Başarılı", {
-          messagType: ToastrMessageType.Success,
-          position: ToastrPosition.TopRight
-        })
-      }
-    }, (errorResponse: HttpErrorResponse) => {
+        if (this.options.isAdminPage) {
+          this.alertifyService.message(message, {
+            dismissOthers: true,
+            messageType: MessageType.Success,
+            position: Position.TopRight
+          })
+        }
+        else {
+          this.customToastrService.message(message, "Başarılı", {
+            messagType: ToastrMessageType.Success,
+            position: ToastrPosition.TopRight
+          })
+        }
+      }, (errorResponse: HttpErrorResponse) => {
 
-      const message: string = "Dosyalar yüklenirken hata oluştu."
+        const message: string = "Dosyalar yüklenirken hata oluştu."
 
-      if (this.options.isAdminPage) {
-        this.alertifyService.message(message, {
-          dismissOthers: true,
-          messageType: MessageType.Error,
-          position: Position.TopRight
-        })
-      }
-      else {
-        this.customToastrService.message(message, "Başarısız", {
-          messagType: ToastrMessageType.Error,
-          position: ToastrPosition.TopRight
-        })
+        if (this.options.isAdminPage) {
+          this.alertifyService.message(message, {
+            dismissOthers: true,
+            messageType: MessageType.Error,
+            position: Position.TopRight
+          })
+        }
+        else {
+          this.customToastrService.message(message, "Başarısız", {
+            messagType: ToastrMessageType.Error,
+            position: ToastrPosition.TopRight
+          })
+        }
+      });
+    })
+
+    
+  }
+
+  openDialog(afterClosed: any): void {
+    const dialogRef = this.dialog.open(FileUploadComponent, {
+      width: '250px',
+      data: FileUploadDialogState.Yes,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result == FileUploadDialogState.Yes) {
+        afterClosed();
       }
     });
   }
+
 }
 
 export class FileUploadOptions {
