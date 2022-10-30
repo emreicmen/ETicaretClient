@@ -7,9 +7,9 @@ import { BaseDialog } from '../base/base-dialog';
   templateUrl: './file-upload-dialog.component.html',
   styleUrls: ['./file-upload-dialog.component.scss']
 })
-export class FileUploadDialogComponent extends BaseDialog<FileUploadDialogComponent>{
-
-  constructor(dialogRef: MatDialogRef<FileUploadDialogComponent>,
+export class FileUploadDialogComponent extends BaseDialog<FileUploadDialogComponent> {
+  constructor(
+    dialogRef: MatDialogRef<FileUploadDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: FileUploadDialogState) {
     super(dialogRef)
   }
@@ -17,5 +17,5 @@ export class FileUploadDialogComponent extends BaseDialog<FileUploadDialogCompon
 }
 
 export enum FileUploadDialogState {
-  Yes,No
+  Yes, No
 }
